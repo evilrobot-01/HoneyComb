@@ -34,6 +34,10 @@ Finally flash the firmware to a SD card. Use fdisk -l to list the disks and chec
     sudo fdisk -l
     sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/sdX conv=fsync
     
+Insert the SD card into the Honeycomb, connect the console cable and then fire up minicom (ensuring you disable flow control under serial port setup) before finally powering up the Honeycomb.
+
+    sudo minicom -s -c on -D /dev/ttyUSB0
+    
 ## Building an Arch Linux USB
 
 Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
@@ -100,9 +104,9 @@ Finally unmount and exit from root
     umount boot root
     exit
     
-Start up minicom and then boot the HoneyComb, logging in as root with password root.
+Start up minicom (ensuring you disable flow control under serial port setup) and then boot the HoneyComb, logging in as root with password root.
 
-    minicom
+    sudo minicom -s -c on -D /dev/ttyUSB0
     
 Once booted, initialise the pacman keyring, populate the signing keys and update the system packages:
 
