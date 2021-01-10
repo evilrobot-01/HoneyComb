@@ -34,7 +34,7 @@ Finally flash the firmware to a SD card. Use fdisk -l to list the disks and chec
     sudo fdisk -l
     sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/sdX conv=fsync
     
-Insert the SD card into the Honeycomb, connect the console cable and then fire up minicom (ensuring you disable flow control under serial port setup) before finally powering up the Honeycomb.
+Insert the SD card into the Honeycomb, connect the console cable and then fire up minicom (ensuring you disable flow control under serial port setup and then save for future) before finally powering up the Honeycomb.
 
     sudo minicom -s -c on -D /dev/ttyUSB0
     
@@ -105,7 +105,7 @@ Finally unmount and exit from root
     
 Start up minicom (ensuring you disable flow control under serial port setup) and then boot the HoneyComb, logging in as root with password root.
 
-    sudo minicom -s -c on -D /dev/ttyUSB0
+    sudo minicom -c on -D /dev/ttyUSB0
     
 Once booted, initialise the pacman keyring, populate the signing keys and update the system packages:
 
