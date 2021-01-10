@@ -33,3 +33,87 @@ Finally flash the firmware to a SD card. Use fdisk -l to list the disks and chec
 
     sudo fdisk -l
     sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/sdX conv=fsync
+    
+## Building an Arch Linux USB
+
+Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
+
+Firstly create a working folder and then pull down the latest generic ARM build:
+
+    mkdir alarm && cd alarm
+    wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+    
+Then change to root:
+
+    sudo su
+    
+Then list the disks to determine the identifier, in my case it was /dev/sdg:
+
+    fdisk -l
+    
+Next we will set up the required partitions:
+
+    fdisk /dev/sdX
+
+Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +100M for last. Then type t and then c to set the partition as W95 FAT32 (LBA).
+
+    o   p   n   p   1   ENTER   +100M
+    t   c
+
+To create the root partition, type n for a new partition, p for primary, 2 for second partition, enter to accept default first sector and enter again for last.
+
+    n   p   p   2   ENTER   ENTER
+    
+Finally write the changes and exit by pressing w.
+
+    w
+    
+Next we need to create and mount the file systems (amend device as necessary).
+
+    mkfs.vfat /dev/sdX1
+    mkdir boot
+    mount /dev/sdX1 boot
+    mkfs.ext4 /dev/sdX2
+    mkdir root
+    mount /dev/sdX2 root
+    https://itsfoss.com/install-arch-raspberry-pi/
+    
+Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
+
+    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C root
+    sync
+    
+Next we need to set up the boot partition and populate fstab (amend as necessary):
+
+    mv root/boot/* boot
+    echo "UUID=$(blkid -s UUID -o value /dev/sdX2) / ext4 defaults 0 0" >> root/etc/fstab
+	echo "UUID=$(blkid -s UUID -o value /dev/sdX1) /boot vfat defaults 0 0" >> root/etc/fstab
+	cat root/etc/fstab
+    
+The USB device will require a startup.nsh file that the UEFI shell will run on boot. Replace /dev/sdxn below with the partition identifier.
+
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" >> boot/startup.nsh
+    cat boot/startup.nsh
+    
+Finally unmount and exit from root
+
+    umount boot root
+    exit
+    
+Start up minicom and then boot the HoneyComb, logging in as root with password root.
+
+    minicom
+    
+Once booted, initialise the pacman keyring, populate the signing keys and update the system packages:
+
+    pacman-key --init
+    pacman-key --populate archlinuxarm
+    pacman -Syu
+
+Finally install the efibootmgr package to create a UEFI boot entry. Use blkid to identify the root partition (/dev/sda2 in my case) and then efibootmgr to add the boot entry (amend as necessary):
+
+    pacman -S efibootmgr
+    blkid
+    efibootmgr --disk /dev/Xda --part 1 --create --label "Arch Linux ARM" --loader /Image --unicode 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rw initrd=\initramfs-linux.img' --verbose
+
+    
