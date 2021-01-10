@@ -59,14 +59,14 @@ Next we will set up the required partitions:
 
     fdisk /dev/sdX
 
-Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +100M for last. Then type t and then c to set the partition as W95 FAT32 (LBA).
+Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +260M for last. Then type t and then c to set the partition as W95 FAT32 (LBA).
 
-    o   p   n   p   1   ENTER   +100M
+    o   p   n   p   1   ENTER   +260M
     t   c
 
 To create the root partition, type n for a new partition, p for primary, 2 for second partition, enter to accept default first sector and enter again for last.
 
-    n   p   p   2   ENTER   ENTER
+    n   p   2   ENTER   ENTER
     
 Finally write the changes and exit by pressing w.
 
