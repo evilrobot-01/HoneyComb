@@ -80,7 +80,6 @@ Next we need to create and mount the file systems (amend device as necessary).
     mkfs.ext4 /dev/sdX2
     mkdir root
     mount /dev/sdX2 root
-    https://itsfoss.com/install-arch-raspberry-pi/
     
 Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
