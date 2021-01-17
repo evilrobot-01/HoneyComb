@@ -40,9 +40,9 @@ Insert the SD card into the Honeycomb, connect the console cable and then fire u
     
 ## Building an Arch Linux USB
 
-Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
+The below steps will create an Arch Linux USB drive with the generic Arch Linux ARM build. You will need to use a USB network adapter until a custom kernel is built later in this guide. Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
 
-Firstly create a working folder and then pull down the latest generic ARM build:
+On a Linux machine, firstly create a working folder and then pull down the latest generic ARM build:
 
     mkdir alarm && cd alarm
     wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
@@ -51,7 +51,7 @@ Then change to root:
 
     sudo su
     
-Then list the disks to determine the identifier, in my case it was /dev/sdg:
+Insert the USB disk and then list the disks to determine the identifier, in my case it was /dev/sdg:
 
     fdisk -l
     
@@ -90,20 +90,20 @@ Next we need to set up the boot partition and populate fstab (amend as necessary
 
     mv root/boot/* boot
     echo "UUID=$(blkid -s UUID -o value /dev/sdX2) / ext4 defaults 0 0" >> root/etc/fstab
-	echo "UUID=$(blkid -s UUID -o value /dev/sdX1) /boot vfat defaults 0 0" >> root/etc/fstab
-	cat root/etc/fstab
+    echo "UUID=$(blkid -s UUID -o value /dev/sdX1) /boot vfat defaults 0 0" >> root/etc/fstab
+    cat root/etc/fstab
     
-The USB device will require a startup.nsh file that the UEFI shell will run on boot. Replace /dev/sdxn below with the partition identifier.
+The USB device will require a startup.nsh file that the UEFI shell will run on boot. Replace /dev/sdxn below with the relevant partition identifier.
 
     echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" >> boot/startup.nsh
     cat boot/startup.nsh
     
-Finally unmount and exit from root
+Finally unmount and exit from root and then move the USB drive to the HoneyComb.
 
     umount boot root
     exit
     
-Start up minicom (ensuring you disable flow control under serial port setup) and then boot the HoneyComb, logging in as root with password root.
+Start up minicom and then boot the HoneyComb, logging in as root with password root.
 
     sudo minicom -c on -D /dev/ttyUSB0
     
