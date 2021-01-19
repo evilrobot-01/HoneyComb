@@ -171,31 +171,27 @@ Next we need to create and mount the file systems (amend device as necessary).
     btrfs subvolume create @log
     cd ~/alarm
 
-PROBLEM HERE WITH /BOOT MOUNTING AFFECTING PACKAGE UPGRADES LTER
-
     # Re-mount to subvolumes
-    umount root
-    mount -o compress=lzo,subvol=@ /dev/nvme0n1p2 root
-    cd root
-    mkdir -p {home,.snapshots,var/log}
-    mount -o compress=lzo,subvol=@home /dev/nvme0n1p2 home
-    mount -o compress=lzo,subvol=@snapshots /dev/nvme0n1p2 .snapshots
-    mount -o compress=lzo,subvol=@log /dev/nvme0n1p2 var/log
-    cd ..
+    umount /mnt/boot /mnt
+    mount -o compress=lzo,subvol=@ /dev/nvme0n1p2 /mnt
+    cd /mnt
+    mkdir -p {boot,home,.snapshots,var/log}
+    mount -o compress=lzo,subvol=@home /dev/nvme0n1p2 /mnt/home
+    mount -o compress=lzo,subvol=@snapshots /dev/nvme0n1p2 /mnt/.snapshots
+    mount -o compress=lzo,subvol=@log /dev/nvme0n1p2 /mnt/var/log
+    mount /dev/nvme0n1p1 /mnt/boot
+    cd ~/alarm
 
 Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
-    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C root
+    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
     sync
 
 Next we need to set up the boot partition and populate fstab (amend as necessary):
 
-    mv root/boot/* boot
     pacman -S arch-install-scripts
-    genfstab -U root >> root/etc/fstab
-    genfstab -U boot >> root/etc/fstab ERROR HERE?
+    genfstab -U /mnt >> /mnt/etc/fstab
     cat root/etc/fstab
-    
 
 Next start to configure the system.
 
