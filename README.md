@@ -158,19 +158,18 @@ Next we need to create and mount the file systems (amend device as necessary).
 
     pacman -S dosfstools btrfs-progs
     mkfs.vfat /dev/nvme0n1p1
-    mkdir boot
-    mount /dev/nvme0n1p1 boot
     mkfs.btrfs /dev/nvme0n1p2
-    mkdir root
-    mount -o compress=lzo /dev/nvme0n1p2 root
+    mount -o compress=lzo /dev/nvme0n1p2 /mnt
+    mkdir /mnt/boot
+    mount /dev/nvme0n1p1 /mnt/boot
 
     # Create subvolumes based on https://wiki.archlinux.org/index.php/Snapper#Suggested_filesystem_layout and https://www.fastycloud.com/tutorials/kb/install-arch-linux-with-btrfs-snapshotting/
-    cd root
+    cd /mnt
     btrfs subvolume create @
     btrfs subvolume create @home
     btrfs subvolume create @snapshots
     btrfs subvolume create @log
-    cd ..
+    cd ~/alarm
 
 PROBLEM HERE WITH /BOOT MOUNTING AFFECTING PACKAGE UPGRADES LTER
 
