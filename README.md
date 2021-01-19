@@ -216,25 +216,12 @@ Finally unmount and exit from root and then power off. Remove the USB drive.
     umount /mnt/boot /mnt/home /mnt/.snapshots /mnt/var/log /mnt
     poweroff
 
-
-
 Once booted, initialise the pacman keyring, populate the signing keys and update the system packages:
 
     pacman-key --init
     pacman-key --populate archlinuxarm
-    pacman -S btrfs-progs
-    #pacman -Syu
+    pacman -Syu
     reboot
-
-
-
-
-
-
-
-
-
-
 
 ## Building Kernel
 
