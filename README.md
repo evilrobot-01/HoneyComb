@@ -195,26 +195,25 @@ Next we need to set up the boot partition and populate fstab (amend as necessary
 
 Next start to configure the system.
 
-    arch-chroot root
+    pacstrap -i /mnt base base-devel btrfs-progs
+    arch-chroot /mnt
     ln -s /usr/share/zoneinfo/Europe/London /etc/localtime # Replace Region/City with your value
     hwclock --systohc
     nano /etc/locale.gen # Uncomment en_GB.UTF-8 UTF-8 line and save
     locale-gen
     echo "LANG=en_GB.UTF-8" > /etc/locale.conf
     nano /etc/mkinitcpio.conf # Add btrfs to MODULES=()
-    mount /dev/nvme0n1p1 boot
     mkinitcpio -p linux-aarch64 # re-generate initial ram disk
-    umount boot
     exit
 
 Create a startup.nsh file that the UEFI shell will run on boot. Replace /dev/nvme0n1p2 below with the relevant partition identifier.
 
-    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img" >> boot/startup.nsh
-    cat boot/startup.nsh
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
+    cat /mnt/boot/startup.nsh
 
 Finally unmount and exit from root and then power off. Remove the USB drive.
 
-    umount boot root/home root/.snapshots root/var/log root
+    umount /mnt/boot /mnt/home /mnt/.snapshots /mnt/var/log /mnt
     poweroff
 
 
