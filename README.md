@@ -81,12 +81,12 @@ Next we need to create and mount the file systems (amend device as necessary).
     mkdir /mnt/boot
     mount /dev/sdX1 /mnt/boot
     
-Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
+Next we write extract the downloaded build to the mounted partitions and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
     bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
     sync
     
-Next we need to set up the boot partition and populate fstab:
+Next we need to populate fstab:
 
     pacman -S arch-install-scripts
     genfstab -U /mnt >> /mnt/etc/fstab
