@@ -141,7 +141,7 @@ Next we will set up the required partitions:
 
     fdisk /dev/nvme0n1
 
-Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +260M for last. Then type t and then>
+Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +1G for last. Then type t and then c to set the partition as W95 FAT32 (LBA).
 
     o   p   n   p   1   ENTER   +1G
     t   c
