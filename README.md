@@ -74,33 +74,32 @@ Finally write the changes and exit by pressing w.
     
 Next we need to create and mount the file systems (amend device as necessary).
 
+    pacman -S dosfstools
     mkfs.vfat /dev/sdX1
-    mkdir boot
-    mount /dev/sdX1 boot
     mkfs.ext4 /dev/sdX2
-    mkdir root
-    mount /dev/sdX2 root
+    mount /dev/sdX2 /mnt
+    mkdir /mnt/boot
+    mount /dev/sdX1 /mnt/boot
     
 Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
-    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C root
+    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
     sync
     
-Next we need to set up the boot partition and populate fstab (amend as necessary):
+Next we need to set up the boot partition and populate fstab:
 
-    mv root/boot/* boot
-    echo "UUID=$(blkid -s UUID -o value /dev/sdX2) / ext4 defaults 0 0" >> root/etc/fstab
-    echo "UUID=$(blkid -s UUID -o value /dev/sdX1) /boot vfat defaults 0 0" >> root/etc/fstab
+    pacman -S arch-install-scripts
+    genfstab -U /mnt >> /mnt/etc/fstab
     cat root/etc/fstab
     
 The USB device will require a startup.nsh file that the UEFI shell will run on boot. Replace /dev/sdxn below with the relevant partition identifier.
 
-    echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" >> boot/startup.nsh
-    cat boot/startup.nsh
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
+    cat /mnt/boot/startup.nsh
     
 Finally unmount and exit from root and then move the USB drive to the HoneyComb.
 
-    umount boot root
+    umount /mnt/boot /mnt
     exit
     
 Start up minicom and then boot the HoneyComb, logging in as root with password root.
