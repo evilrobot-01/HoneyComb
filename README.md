@@ -222,6 +222,17 @@ Once booted, initialise the pacman keyring, populate the signing keys and update
     pacman-key --populate archlinuxarm
     pacman -Syu
     reboot
+    
+Once rebooted, change the root password and then set up a new user:
+
+    passwd
+    useradd -m -G wheel -s /bin/bash username
+    visudo   # Uncomment the line "%wheel   ALL=(ALL)   ALL" and then enter :wq to save and quit
+    passwd username
+    
+Test that you can login as new new user on another tty (CTRL-ALT-F2) and if successful, delete the default alarm user:
+
+    userdel alarm
 
 ## Building Kernel
 
