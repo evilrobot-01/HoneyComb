@@ -202,6 +202,7 @@ Next start to configure the system.
     nano /etc/locale.gen # Uncomment en_GB.UTF-8 UTF-8 line and save
     locale-gen
     echo "LANG=en_GB.UTF-8" > /etc/locale.conf
+    echo "KEYMAP=uk" > /etc/vconsole.conf
     nano /etc/mkinitcpio.conf # Add btrfs to MODULES=()
     mkinitcpio -p linux-aarch64 # re-generate initial ram disk
     exit
@@ -277,10 +278,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     echo "CONFIG_PCIE_MOBIVEIL_HOST=y" >> .config
     echo "CONFIG_PCIE_LAYERSCAPE_GEN4=y" >> .config
     echo "CONFIG_PCI_QUIRKS=y" >> .config
-
-    # Enable AMD GPU
-
-
+    
     # Compilation
     make -j$(nproc) Image Image.gz modules
     # Install modules
@@ -294,7 +292,5 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
 Finally update boot loader (startup.nsh for now) to load new kernel, along with a few parameters to work around current issues:
 
-Image510 root=UUID=0e2373e4-c270-4a31-af5f-8d83dcc815bc rw rootfstype=ext4 initrd=initramfs-linux510.img arm-smmu.disable_bypass=0 amdgpu.pcie_gen_cap=0x4
-
-echo "Image510 root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux510.img arm-smmu.disable_bypass=0 amdgpu.pcie_gen_cap=0x4" > /boot/startup.nsh
+    echo "Image510 root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux510.img arm-smmu.disable_bypass=0 amdgpu.pcie_gen_cap=0x4 quiet logo.nologo" > /boot/startup.nsh
 
