@@ -260,36 +260,37 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     
     
     # Enable HoneyComb specific modules
-    #echo "CONFIG_NET_SWITCHDEV=y" >> .config
-    #echo "CONFIG_FSL_MC_BUS=y" >> .config
-        echo "CONFIG_FSL_MC_UAPI_SUPPORT=y" >> .config
-    #echo "CONFIG_FSL_XGMAC_MDIO=y" >> .config
-    #echo "CONFIG_FSL_DPAA2_ETH=m" >> .config
-    #echo "CONFIG_FSL_DPAA2_PTP_CLOCK=m" >> .config
+        #echo "CONFIG_NET_SWITCHDEV=y" >> .config
+        #echo "CONFIG_FSL_MC_BUS=y" >> .config
+    echo "CONFIG_FSL_MC_UAPI_SUPPORT=y" >> .config
+        #echo "CONFIG_FSL_XGMAC_MDIO=y" >> .config
+        #echo "CONFIG_FSL_DPAA2_ETH=m" >> .config
+        #echo "CONFIG_FSL_DPAA2_PTP_CLOCK=m" >> .config
             echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
             echo "CONFIG_STAGING=y" >> .config
             echo "CONFIG_FSL_DPAA2=y" >> .config
             echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
-    #echo "CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=y" >> .config
-    #echo "CONFIG_FSL_MC_DPIO=m" >> .config
-    #echo "CONFIG_ARM_GIC_V3_ITS_FSL_MC=y" >> .config
-    #echo "CONFIG_CRYPTO_DEV_FSL_DPAA2_CAAM=m" >> .config
-    #echo "CONFIG_ARCH_LAYERSCAPE=y" >> .config
-    #echo "CONFIG_PCIE_MOBIVEIL=y" >> .config
-    #echo "CONFIG_PCIE_MOBIVEIL_HOST=y" >> .config
-    #echo "CONFIG_PCIE_LAYERSCAPE_GEN4=y" >> .config
-    #echo "CONFIG_PCI_QUIRKS=y" >> .config
+        #echo "CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=y" >> .config
+        #echo "CONFIG_FSL_MC_DPIO=m" >> .config
+        #echo "CONFIG_ARM_GIC_V3_ITS_FSL_MC=y" >> .config
+        #echo "CONFIG_CRYPTO_DEV_FSL_DPAA2_CAAM=m" >> .config
+        #echo "CONFIG_ARCH_LAYERSCAPE=y" >> .config
+        #echo "CONFIG_PCIE_MOBIVEIL=y" >> .config
+        #echo "CONFIG_PCIE_MOBIVEIL_HOST=y" >> .config
+        #echo "CONFIG_PCIE_LAYERSCAPE_GEN4=y" >> .config
+        #echo "CONFIG_PCI_QUIRKS=y" >> .config
+    echo "CONFIG_NLS_ASCII=y" >> .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
     # Install modules
-    make modules_install
+    sudo make modules_install
 
 Next, copy the kernel to the boot partition and then generate the initial RAM disk:
 
-    cp -v arch/arm64/boot/Image /boot/Image510
-    cp -v arch/arm64/boot/Image.gz /boot/Image510.gz
-    mkinitcpio -k 5.10.5-ARCH+ -g /boot/initramfs-linux510.img
+    sudo cp -v arch/arm64/boot/Image /boot/Image510
+    sudo cp -v arch/arm64/boot/Image.gz /boot/Image510.gz
+    sudo mkinitcpio -k 5.10.5-ARCH+ -g /boot/initramfs-linux510.img
 
 Finally update boot loader (startup.nsh for now) to load new kernel, along with a few parameters to work around current issues:
 
