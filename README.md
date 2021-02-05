@@ -249,42 +249,20 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     git clone --depth 1 -b linux-5.10.y-cex7 https://github.com/SolidRun/linux-stable linux-source-5.10 && cd linux-source-5.10
     make mrproper
     # Configuration
-    #zcat /proc/config.gz > .config
-    #curl -o .config https://raw.githubusercontent.com/archlinux/svntogit-packages/26f78450f0fc7cd12bc5a041e1248739a0ce11bf/trunk/config
-    #curl -o .config https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/linux-aarch64-rc/config
-    #make nconfig
-    #make olddefconfig
     make defconfig
-    
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
     sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
+    sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     
-    #sed -ri '/CONFIG_PHYLIB/s/=.+/=y/g' .config             # Ensure phylib is enabled by default for onboard networking
-    #sed -ri '/CONFIG_NR_CPUS/s/=.+/=16/g' .config           # Config limited to 8 cores by default for some reason
-        
-    # Enable HoneyComb specific modules
-        #echo "CONFIG_NET_SWITCHDEV=y" >> .config
-        #echo "CONFIG_FSL_MC_BUS=y" >> .config
-        #echo "CONFIG_FSL_XGMAC_MDIO=y" >> .config
-        #echo "CONFIG_FSL_DPAA2_ETH=m" >> .config
-        #echo "CONFIG_FSL_DPAA2_PTP_CLOCK=m" >> .config
+    # Enable HoneyComb specific modules?
             echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
             echo "CONFIG_STAGING=y" >> .config
             echo "CONFIG_FSL_DPAA2=y" >> .config
             echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
-        #echo "CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=y" >> .config
-        #echo "CONFIG_FSL_MC_DPIO=m" >> .config
-        #echo "CONFIG_ARM_GIC_V3_ITS_FSL_MC=y" >> .config
-        #echo "CONFIG_CRYPTO_DEV_FSL_DPAA2_CAAM=m" >> .config
-        #echo "CONFIG_ARCH_LAYERSCAPE=y" >> .config
-        #echo "CONFIG_PCIE_MOBIVEIL=y" >> .config
-        #echo "CONFIG_PCIE_MOBIVEIL_HOST=y" >> .config
-        #echo "CONFIG_PCIE_LAYERSCAPE_GEN4=y" >> .config
-        #echo "CONFIG_PCI_QUIRKS=y" >> .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
