@@ -255,18 +255,20 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     #make nconfig
     #make olddefconfig
     make defconfig
+    
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
+    sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
+    sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
+    sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
+    sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
     
     #sed -ri '/CONFIG_PHYLIB/s/=.+/=y/g' .config             # Ensure phylib is enabled by default for onboard networking
     #sed -ri '/CONFIG_NR_CPUS/s/=.+/=16/g' .config           # Config limited to 8 cores by default for some reason
-    
-    
+        
     # Enable HoneyComb specific modules
         #echo "CONFIG_NET_SWITCHDEV=y" >> .config
         #echo "CONFIG_FSL_MC_BUS=y" >> .config
-    echo "CONFIG_FSL_MC_UAPI_SUPPORT=y" >> .config
-    sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
         #echo "CONFIG_FSL_XGMAC_MDIO=y" >> .config
         #echo "CONFIG_FSL_DPAA2_ETH=m" >> .config
         #echo "CONFIG_FSL_DPAA2_PTP_CLOCK=m" >> .config
@@ -283,10 +285,6 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
         #echo "CONFIG_PCIE_MOBIVEIL_HOST=y" >> .config
         #echo "CONFIG_PCIE_LAYERSCAPE_GEN4=y" >> .config
         #echo "CONFIG_PCI_QUIRKS=y" >> .config
-        
-    sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
-    sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
-    sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
