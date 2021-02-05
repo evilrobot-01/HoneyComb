@@ -256,7 +256,9 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
+    
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
+    sed -i '/CONFIG_MOUSE_APPLETOUCH/s/.*/CONFIG_MOUSE_APPLETOUCH=m/' .config
     
     # Enable HoneyComb specific modules?
             echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
