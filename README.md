@@ -259,6 +259,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_MOUSE_APPLETOUCH/s/.*/CONFIG_MOUSE_APPLETOUCH=m/' .config
+    sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
     
     # Enable HoneyComb specific modules?
             echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
