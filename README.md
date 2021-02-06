@@ -17,6 +17,10 @@ NOTE: there is an issue with building using Python 3.9 so I needed to temporaril
 Next run the script with INITIALIZE to ensure all the required tools are installed and then start the build of the firmware, adapting your memory speed as applicable:
 
     INITIALIZE=1 . ./runme.sh
+    
+    # Apply patch
+    cd build/tianocore/edk2-platforms && git cherry-pick 0276df7768ac10a3c0596b2882c9fbdedc26d717 && cd ../../..
+    
     DDR_SPEED=3200 ./runme.sh
 
 Once built, check the images directory:
