@@ -253,6 +253,8 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
     sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
+    sed -i '/CONFIG_HID_PID/s/.*/CONFIG_HID_PID=y/' .config
+    sed -i '/CONFIG_USB_HIDDEV/s/.*/CONFIG_USB_HIDDEV=y/' .config
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
