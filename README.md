@@ -21,7 +21,7 @@ Next run the script with INITIALIZE to ensure all the required tools are install
 
 Once built, check the images directory:
 
-    [fb@home lx2160a_uefi]$ ls images
+    $ ls images
     lx2160acex7_2200_700_3200_8_5_2.img
     
 Finally flash the firmware to a SD card. Use fdisk -l to list the disks and check through the output to find the correct disk.
