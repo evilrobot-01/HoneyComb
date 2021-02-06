@@ -17,8 +17,9 @@ You can check the installed version using:
 
 Clone the git repository, change to directory, and then run within a subshell in order set an alias for the missing `arch` command.
 
-    git clone https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
-    bash -c 'alias arch="uname -m" && INITIALIZE=1 . ./runme.sh'
+    git clone --recursive --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
+    sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh | grep HOST_ARCH
+    INITIALIZE=1 . ./runme.sh
     
 Once initialised, start the build of the firmware, adapting your memory speed as applicable:
 
