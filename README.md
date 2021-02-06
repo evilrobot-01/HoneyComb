@@ -5,21 +5,21 @@ Based on information from https://gist.github.com/meme/c1f1101fac0f58e883ae08872
 ## Building firmware
 Ensure required packages are installed.
 
-    sudo pacman -S acpica dtc python-virtualenv
+    sudo pacman -S acpica dtc
     
-NOTE: there is an issue with building using Python 3.9 so I needed to downgrade to 3.8. Use the following and then select the version.
+Clone the git repository, change to directory, fix the missing `arch` command (if applicable) and then run the script with INITIALIZE to ensure all the required tools are installed.
 
-    yay -S downgrade && downgrade python
-    
-You can check the installed version using:
-
-    python -V
-
-Clone the git repository, change to directory, and then run within a subshell in order set an alias for the missing `arch` command.
-
-    git clone --recursive --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
+    git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
     sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh | grep HOST_ARCH
     INITIALIZE=1 . ./runme.sh
+    
+NOTE: there is an issue with building using Python 3.9 so I needed to install 3.8 alongside.
+
+    yay -S python38 python-virtualenv
+    virtualenv venv -p /usr/bin/python3.8
+    source venv/bin/activate
+    python -V
+    DDR_SPEED=3200 ./runme.sh
     
 Once initialised, start the build of the firmware, adapting your memory speed as applicable:
 
