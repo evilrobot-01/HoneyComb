@@ -12,14 +12,9 @@ Clone the git repository, change to directory and fix the missing `arch` command
     git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
     sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh | grep HOST_ARCH
     
-NOTE: there is an issue with building using Python 3.9 so I needed to install 3.8 using pyenv. See https://github.com/pyenv/pyenv#installation for shell setup instructions.
-
-    yay -S pyenv
-    pyenv install 3.8.7
-    pyenv global 3.8.7
-    python -V
+NOTE: there is an issue with building using Python 3.9 so I needed to temporarily install 3.8.
     
-Then firstly run the script with INITIALIZE to ensure all the required tools are installed and then start the build of the firmware, adapting your memory speed as applicable:
+Next run the script with INITIALIZE to ensure all the required tools are installed and then start the build of the firmware, adapting your memory speed as applicable:
 
     INITIALIZE=1 . ./runme.sh
     DDR_SPEED=3200 ./runme.sh
