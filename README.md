@@ -7,22 +7,21 @@ Ensure required packages are installed.
 
     sudo pacman -S acpica dtc
     
-Clone the git repository, change to directory, fix the missing `arch` command (if applicable) and then run the script with INITIALIZE to ensure all the required tools are installed.
+Clone the git repository, change to directory and fix the missing `arch` command in the build script (if applicable) 
 
     git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
     sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh | grep HOST_ARCH
-    INITIALIZE=1 . ./runme.sh
     
-NOTE: there is an issue with building using Python 3.9 so I needed to install 3.8 alongside.
+NOTE: there is an issue with building using Python 3.9 so I needed to install 3.8 using pyenv. See https://github.com/pyenv/pyenv#installation for shell setup instructions.
 
-    yay -S python38 python-virtualenv
-    virtualenv venv -p /usr/bin/python3.8
-    source venv/bin/activate
+    yay -S pyenv
+    pyenv install 3.8.7
+    pyenv global 3.8.7
     python -V
-    DDR_SPEED=3200 ./runme.sh
     
-Once initialised, start the build of the firmware, adapting your memory speed as applicable:
+Then firstly run the script with INITIALIZE to ensure all the required tools are installed and then start the build of the firmware, adapting your memory speed as applicable:
 
+    INITIALIZE=1 . ./runme.sh
     DDR_SPEED=3200 ./runme.sh
 
 Once built, check the images directory:
