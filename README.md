@@ -1,20 +1,20 @@
 # HoneyComb
 
-Based on information from https://gist.github.com/meme/c1f1101fac0f58e883ae08872f19b883 and https://dev.to/lizthegrey/first-experiences-with-honeycomb-lx2k-26be.
+This rough guide provides steps for getting a working Arch Linux ARM install on the HoneyComb LX2K. The steps were documented as I first installed things from an x86 Arch machine and then later updated as I progressed with work on the machine itself. Please also note that I am pretty new to Arch and Linux so some of this might not be the nest way to do it. Based on information from https://gist.github.com/meme/c1f1101fac0f58e883ae08872f19b883 and https://dev.to/lizthegrey/first-experiences-with-honeycomb-lx2k-26be.
 
-## Building firmware
+## Building UEFI firmware
 Ensure required packages are installed.
 
     sudo pacman -S acpica dtc
     
-Clone the git repository, change to directory and fix the missing `arch` command in the build script (if applicable) 
+Clone the git repository and fix the missing `arch` command in the build script (if applicable to your current distro) 
 
     git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
-    sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh | grep HOST_ARCH
+    sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh
     
-NOTE: there is an issue with building using Python 3.9 so I needed to temporarily install 3.8.
+NOTE: there is an issue with building using Python 3.9 so I needed to temporarily install 3.8. I ended up using yay -S python38 and then symlinking puthon3 to python38 temporarily to get the build done. None of the python environment stuff worked for me as the build scripts scan for binaries (whereis python3) and determine the running python version that way. I just re-installed python afterwards to ensure everything back to normal.
     
-Next run the script with INITIALIZE to ensure all the required tools are installed and then start the build of the firmware, adapting your memory speed as applicable:
+Next run the script with INITIALIZE to ensure all the required build tools are installed and submodules are fetched from source and then start the build of the firmware, adapting your memory speed as applicable. There is also a patch which needs to be applied to the local source after initialised, which resolves the 'invalid base clock frequency' issue I was having.
 
     INITIALIZE=1 . ./runme.sh
     
@@ -28,18 +28,18 @@ Once built, check the images directory:
     $ ls images
     lx2160acex7_2200_700_3200_8_5_2.img
     
-Finally flash the firmware to a SD card. Use fdisk -l to list the disks and check through the output to find the correct disk.
+Finally flash the firmware to a SD card. Use fdisk -l to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as sdX I believe, but when doing again recently on the HoneyComb it was mmcblk0.
 
     sudo fdisk -l
     sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/sdX conv=fsync
     
-Insert the SD card into the Honeycomb, connect the console cable and then fire up minicom (ensuring you disable flow control under serial port setup and then save for future) before finally powering up the Honeycomb.
+Insert the SD card into the Honeycomb, connect the USB console cable and then fire up minicom (ensuring you disable hardware/software flow control under serial port setup and then save for future) before finally powering up the Honeycomb.
 
     sudo minicom -s -c on -D /dev/ttyUSB0
     
-## Building an Arch Linux USB
+## Building an Arch Linux ARM USB
 
-The below steps will create an Arch Linux USB drive with the generic Arch Linux ARM build. You will need to use a USB network adapter until a custom kernel is built later in this guide. Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
+The below steps will create a bootable Arch Linux ARM USB drive with the generic Arch Linux ARM build. You will need to use a USB network adapter until a custom kernel is built later in this guide. I did it this way as practice on my main machine, so I have a bootable USB version of Arch to keep handy and to let me kick off a local install on NVMe later. Based on information from https://itsfoss.com/install-arch-raspberry-pi/ and https://gist.github.com/thalamus/561d028ff5b66310fac1224f3d023c12.
 
 On a Linux machine, firstly create a working folder and then pull down the latest generic ARM build:
 
@@ -91,7 +91,7 @@ Next we need to populate fstab:
     genfstab -U /mnt >> /mnt/etc/fstab
     cat root/etc/fstab
     
-The USB device will require a startup.nsh file that the UEFI shell will run on boot. Replace /dev/sdxn below with the relevant partition identifier.
+The USB device will require a startup.nsh file that the UEFI shell will run on boot. This is using the EFIStub functionality of the kernel. Replace /dev/sdxn below with the relevant partition identifier.
 
     echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
     cat /mnt/boot/startup.nsh
@@ -105,7 +105,7 @@ Start up minicom and then boot the HoneyComb, logging in as root with password r
 
     sudo minicom -c on -D /dev/ttyUSB0
     
-Once booted, initialise the pacman keyring, populate the signing keys and update the system packages:
+Once booted, carry out the following few steps to initialise the pacman keyring, populate the signing keys and update the system packages:
 
     pacman-key --init
     pacman-key --populate archlinuxarm
@@ -117,12 +117,13 @@ Finally install the efibootmgr package to create a UEFI boot entry. Use blkid to
     blkid
     efibootmgr --disk /dev/Xda --part 1 --create --label "Arch Linux ARM" --loader /Image --unicode 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rw initrd=\initramfs-linux.img' --verbose
 
+NOTE: I havent had great success with the efibootmgr yet, mostly due to what seems is the length of the kernel parameters used later in this guide to get a full working boot. I therefore am relying on the startup.nsh approach on the boot drive, which automatically kicks in when booting the UEFI Shell.
     
 ## Installing Arch Linux ARM on NVMe
 
 We can essentially repeat the steps for setting up a USB drive, but this time installing onto an NVMe disk installed on the HoneyComb.You will still need to use a USB network adapter until a custom kernel is built later in this guide.
 
-Start up minicom and then boot the HoneyComb, logging in as root with password root.
+If applicable, start up minicom and then boot the HoneyComb, logging in as root with password root.
 
     sudo minicom -c on -D /dev/ttyUSB0
 
@@ -130,7 +131,6 @@ Create a working folder and then pull down the latest generic ARM build:
 
     mkdir alarm && cd alarm
     curl -LO http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
-
 
 List the disks to determine the NVMe identifier, in my case it was /dev/nvme0n1:
 
@@ -153,7 +153,7 @@ Finally write the changes and exit by pressing w.
 
     w
 
-Next we need to create and mount the file systems (amend device as necessary).
+Next we need to create and mount the file systems (amend device as necessary). I added btrfs to try it out, you can change to ext4 as with USB above if youd prefer.
 
     pacman -S dosfstools btrfs-progs
     mkfs.vfat /dev/nvme0n1p1
@@ -162,7 +162,7 @@ Next we need to create and mount the file systems (amend device as necessary).
     mkdir /mnt/boot
     mount /dev/nvme0n1p1 /mnt/boot
 
-    # Create subvolumes based on https://wiki.archlinux.org/index.php/Snapper#Suggested_filesystem_layout and https://www.fastycloud.com/tutorials/kb/install-arch-linux-with-btrfs-snapshotting/
+    # Create BTRFS subvolumes based on https://wiki.archlinux.org/index.php/Snapper#Suggested_filesystem_layout and https://www.fastycloud.com/tutorials/kb/install-arch-linux-with-btrfs-snapshotting/
     cd /mnt
     btrfs subvolume create @
     btrfs subvolume create @home
@@ -181,7 +181,7 @@ Next we need to create and mount the file systems (amend device as necessary).
     mount /dev/nvme0n1p1 /mnt/boot
     cd ~/alarm
 
-Next we write extract the downloaded build to the root parition and then ensure that any cached writes are flushed to disk. This may take a few moments...
+Next we write extract the downloaded build to the root partition and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
     bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
     sync
@@ -233,6 +233,8 @@ Once rebooted, change the root password and then set up a new user:
 Test that you can login as new new user on another tty (CTRL-ALT-F2) and if successful, delete the default alarm user:
 
     userdel alarm
+    
+I still havent gotten around to changing the default host name!
 
 ## Building Kernel
 
@@ -242,12 +244,12 @@ Ensure all the packages required for building a kernel are installed.
 
     pacman -S base-devel git xmlto kmod inetutils bc libelf cpio perl tar xz python
 
-Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the running stock Arch kernel, customise the config to add required modules and then finally start the kernel compilation.>
+Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default config, customise the config to add required modules and then finally start the kernel compilation. NOTE; the generic Arch image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/d883ab288f620dfd4967ae5e923faa45efc621dd/core/linux-aarch64/config#L376) so the first kernel build wont be full throttle.
 
     # Preparation
     git clone --depth 1 -b linux-5.10.y-cex7 https://github.com/SolidRun/linux-stable linux-source-5.10 && cd linux-source-5.10
     make mrproper
-    # Configuration
+    # Configuration - I used the default config and then addded a few Arch specific settings, along with additional settings from SolidRun discord.
     make defconfig
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
@@ -258,11 +260,13 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
     
+    # A few peripherals specifc to my setup
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
     sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
     
-    # Enable HoneyComb specific modules?
+    # Enable HoneyComb specific modules: these have been listed historically on the SolidRun discord but didnt seem required for base functionality.
+    # I havent looked at any of the advanced networking stuff as dont yet have any networkihg equipment > 1Gbps. You may want to add in the following...
             echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
             echo "CONFIG_STAGING=y" >> .config
             echo "CONFIG_FSL_DPAA2=y" >> .config
@@ -273,13 +277,16 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     # Install modules
     sudo make modules_install
 
-Next, copy the kernel to the boot partition and then generate the initial RAM disk:
+Next, copy the kernel to the boot partition and then generate the initial RAM disk. I renamed the kernel image and initram-fs so that if something broke I could drop to the UEFI shell and just amend the startup.nsh script to point back to the original kernel. I havent had any problems so feel comfortable to replace this now.
 
     sudo cp -v arch/arm64/boot/Image /boot/Image510
     sudo cp -v arch/arm64/boot/Image.gz /boot/Image510.gz
-    sudo mkinitcpio -k 5.10.5-ARCH+ -g /boot/initramfs-linux510.img
+    sudo mkinitcpio -k 5.10.12-ARCH+ -g /boot/initramfs-linux510.img
 
-Finally update boot loader (startup.nsh for now) to load new kernel, along with a few parameters to work around current issues:
+Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version above for a standard setup:
 
     echo "Image510 root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux510.img arm-smmu.disable_bypass=0 amdgpu.pcie_gen_cap=0x4 quiet logo.nologo" > /boot/startup.nsh
 
+If everything is working, update /ec/pacman.conf to ignore kernel package updates.
+
+    IgnorePkg   = linux linux-aarch64
