@@ -286,6 +286,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version above for a more traditional setup:
 
     echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 quiet" > /boot/startup.nsh
+    # sudo efibootmgr --disk /dev/nvme0n1 -e 3 --create --label "Arch Linux ARM via efibootmgr" --loader /Image --UCS-2 'root=UUID=a51cd699-f746-4722-95e9-be86cd8eab43 rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 quiet udev.log_level=3 vt.global_cursor_default=0' --verbose
 
 If everything is working, update /etc/pacman.conf to ignore kernel package updates until all of the SolidRun patches are in the mainline kernel.
 
