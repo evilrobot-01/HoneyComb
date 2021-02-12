@@ -91,7 +91,7 @@ Next we need to populate fstab:
     genfstab -U /mnt >> /mnt/etc/fstab
     cat root/etc/fstab
     
-The USB device will require a startup.nsh file that the UEFI shell will run on boot. This is using the EFIStub functionality of the kernel. Replace /dev/sdxn below with the relevant partition identifier.
+The USB device will require a startup.nsh file that the UEFI shell will run on boot. This is using the EFIStub functionality of the kernel. Replace /dev/sdxn below with the relevant partition identifier. See the UEFI boot entry section further below if you want to create one.
 
     echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
     cat /mnt/boot/startup.nsh
@@ -111,14 +111,6 @@ Once booted, carry out the following few steps to initialise the pacman keyring,
     pacman-key --populate archlinuxarm
     pacman -Syu
 
-Finally install the efibootmgr package to create a UEFI boot entry. Use blkid to identify the root partition (/dev/sda2 in my case) and then efibootmgr to add the boot entry (amend as necessary):
-
-    pacman -S efibootmgr
-    blkid
-    efibootmgr --disk /dev/Xda --part 1 --create --label "Arch Linux ARM" --loader /Image --unicode 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rw initrd=\initramfs-linux.img' --verbose
-
-NOTE: I havent had great success with the efibootmgr yet, mostly due to what seems to be the length of the kernel parameters used later in this guide to get a full working boot. I therefore am relying on the startup.nsh approach on the boot drive, which automatically kicks in when booting the UEFI Shell. I might look at how to generate EFI files next, just to get a clean simple boot without grub etc.
-    
 ## Installing Arch Linux ARM on NVMe
 
 We can essentially repeat the steps for setting up a USB drive, but this time installing onto an NVMe disk installed on the HoneyComb.You will still need to use a USB network adapter until a custom kernel is built later in this guide.
@@ -206,7 +198,7 @@ Next start to configure the system.
     mkinitcpio -p linux-aarch64 # re-generate initial ram disk
     exit
 
-Create a startup.nsh file on the NVMe boot partition that the UEFI shell will run on boot. Replace /dev/nvme0n1p2 below with the relevant partition identifier.
+Create a startup.nsh file on the NVMe boot partition that the UEFI shell will run on boot. Replace /dev/nvme0n1p2 below with the relevant partition identifier. See the UEFI boot entry section further below if you want to create one.
 
     echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
     cat /mnt/boot/startup.nsh
@@ -291,3 +283,36 @@ Finally update "boot loader" (startup.nsh for now) to load new kernel, along wit
 If everything is working, update /etc/pacman.conf to ignore kernel package updates until all of the SolidRun patches are in the mainline kernel.
 
     IgnorePkg   = linux linux-aarch64
+    
+## Creating UEFI Boot Entry
+
+I havent had success with creating a UEFI boot entry directly from Arch yet, but I have gotten close. The ideal scenario would be to use efibootmgr, but a workaround is to use bcfg from within the UEFI shell. Both options detailed below.
+
+### UEFI Shell
+
+Firstly generate a boot options file from Arch, which will hold all the required kernel parameters and which will be used to make entry creation within the shell easier. The file must be encoded using UCS-2:
+
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 quiet udev.log_level=3 vt.global_cursor_default=0" | iconv -t ucs2 -o /boot/options.txt
+    
+Boot into the UEFI Shell and then enter the following to create the entry, which will set it as the first boot entry.
+
+    bcfg boot add 0 FS0:\Image "Arch Linux ARM"
+    bcfg boot -opt 0 FS0:\options.txt
+
+You can use the following to list all entries verbosely
+
+    bcfg boot dump -v -b
+
+And finally, you cannot update an existing entry as the -opt command appends information to the supplied boot entry rather than replacing. You can remove an entry with the following:
+
+    bcfg boot rm #
+
+### efitbootmgr
+
+efibootmgr currently seems to generate the drive identifier starting with PciRoot(0x0)/Pci(0x0,0x0)/NVMe ... whereas the UEFI firmware generates PcieRoot(0x2)/Pci(0x0,0x0)/Pci(0x0,0x0)/NVMe... As a result the entry just seems to disappear after adding, presumably as it is invalid. The ideal steps would be as below.
+
+Install the efibootmgr package to create a UEFI boot entry. Use blkid to identify the root partition (/dev/sda2 in my case) and then efibootmgr to add the boot entry (amend as necessary):
+
+    pacman -S efibootmgr
+    blkid
+    efibootmgr --disk /dev/Xda -e 3 --create --label "Arch Linux ARM" --loader /Image --UCS-2 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rw initrd=\initramfs-linux.img' --verbose
