@@ -264,6 +264,8 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
     echo "CONFIG_FSL_DPAA2=y" >> .config
     echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
+    # Silent boot
+    sed -i '/CONFIG_LOGO=/s/.*/# CONFIG_LOGO is not set/' .config
     # A few peripherals specifc to my setup
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
@@ -282,7 +284,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version above for a more traditional setup:
 
-    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img arm-smmu.disable_bypass=0 amdgpu.pcie_gen_cap=0x4 quiet logo.nologo" > /boot/startup.nsh
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 quiet" > /boot/startup.nsh
 
 If everything is working, update /etc/pacman.conf to ignore kernel package updates until all of the SolidRun patches are in the mainline kernel.
 
