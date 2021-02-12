@@ -244,7 +244,7 @@ Ensure all the packages required for building a kernel are installed.
 
     pacman -S base-devel git xmlto kmod inetutils bc libelf cpio perl tar xz python
 
-Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default config, customise the config to add missing/required modules and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/d883ab288f620dfd4967ae5e923faa45efc621dd/core/linux-aarch64/config#L376) so the first kernel build wont be full throttle. Using the default config corrects this, but you can always set it manually to 16 if you wish.
+Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default config, customise the config to add missing/required modules and then finally start the kernel compilation. I just accepted all the defaults if prompted. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/d883ab288f620dfd4967ae5e923faa45efc621dd/core/linux-aarch64/config#L376) so the first kernel build wont be full throttle. Using the default config corrects this, but you can always set it manually to 16 if you wish.
 
     # Preparation
     git clone --depth 1 -b linux-5.10.y-cex7 https://github.com/SolidRun/linux-stable linux-source-5.10 && cd linux-source-5.10
@@ -253,24 +253,21 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     make defconfig
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
-    sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
     sed -i '/CONFIG_HID_PID/s/.*/CONFIG_HID_PID=y/' .config
     sed -i '/CONFIG_USB_HIDDEV/s/.*/CONFIG_USB_HIDDEV=y/' .config
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
-    
+    # Enable HoneyComb specific
+    sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
+    sed -i '/CONFIG_FSL_DPAA2_QDMA/s/.*/CONFIG_FSL_DPAA2_QDMA=m/' .config
+    sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
+    echo "CONFIG_FSL_DPAA2=y" >> .config
+    echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
     # A few peripherals specifc to my setup
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
     sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
-    
-    # Enable HoneyComb specific modules: these have been listed historically on the SolidRun discord but didnt seem required for base functionality.
-    # I havent looked at any of the advanced networking stuff as dont yet have any networkihg equipment > 1Gbps. You may want to add in the following...
-            echo "CONFIG_FSL_DPAA2_QDMA=m" >> .config
-            echo "CONFIG_STAGING=y" >> .config
-            echo "CONFIG_FSL_DPAA2=y" >> .config
-            echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
