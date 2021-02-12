@@ -264,6 +264,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
     echo "CONFIG_FSL_DPAA2=y" >> .config
     echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
+    sed -i '/CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=/s/.*/# CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT is not set/' .config
     # Silent boot
     sed -i '/CONFIG_LOGO=/s/.*/# CONFIG_LOGO is not set/' .config
     # A few peripherals specifc to my setup
