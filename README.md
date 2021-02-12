@@ -297,15 +297,19 @@ Firstly generate a boot options file from Arch, which will hold all the required
 Boot into the UEFI Shell and then enter the following to create the entry, which will set it as the first boot entry.
 
     bcfg boot add 0 FS0:\Image "Arch Linux ARM"
-    bcfg boot -opt 0 FS0:\options.txt
+    bcfg boot -opt 0x0 FS0:\options.txt
 
 You can use the following to list all entries verbosely
 
     bcfg boot dump -v -b
 
-And finally, you cannot update an existing entry as the -opt command appends information to the supplied boot entry rather than replacing. You can remove an entry with the following:
+NOTE: you cannot update an existing entry as the -opt command appends information to the supplied boot entry rather than replacing. You can remove an entry with the following:
 
     bcfg boot rm #
+    
+And finally reset to restart and boot straight into Arch
+
+    reset
 
 ### efitbootmgr
 
