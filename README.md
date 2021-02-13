@@ -253,7 +253,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     # Enable HoneyComb specific
     sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
     sed -i '/CONFIG_FSL_DPAA2_QDMA/s/.*/CONFIG_FSL_DPAA2_QDMA=m/' .config
-    sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
+        # sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
     echo "CONFIG_FSL_DPAA2=y" >> .config
     echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
     sed -i '/CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=/s/.*/# CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT is not set/' .config
@@ -263,6 +263,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
     sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
+    sed -i '/CONFIG_HID_CORSAIR/s/.*/CONFIG_HID_CORSAIR=m/' .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
