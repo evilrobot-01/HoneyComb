@@ -245,6 +245,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     make defconfig
     sed -ri '/CONFIG_LOCALVERSION=/s/=.+/="-ARCH"/g' .config
     sed -i '/CONFIG_LOCALVERSION_AUTO=/s/.*/# CONFIG_LOCALVERSION_AUTO is not set/' .config
+    sed -i '/CONFIG_HIDRAW/s/.*/CONFIG_HIDRAW=y/' .config
     sed -i '/CONFIG_HID_PID/s/.*/CONFIG_HID_PID=y/' .config
     sed -i '/CONFIG_USB_HIDDEV/s/.*/CONFIG_USB_HIDDEV=y/' .config
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
@@ -263,7 +264,6 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
     sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
-    sed -i '/CONFIG_HID_CORSAIR/s/.*/CONFIG_HID_CORSAIR=m/' .config
     
     # Compilation
     make -j$(nproc) ARCH=arm64 Image Image.gz modules
