@@ -251,6 +251,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -ri '/CONFIG_NLS_DEFAULT=/s/=.+/="utf8"/g' .config
     sed -i '/CONFIG_NLS_ASCII/s/.*/CONFIG_NLS_ASCII=y/' .config
     sed -ri '/CONFIG_NLS_ISO8859_1/s/=.+/=m/g' .config
+    sed -i '/CONFIG_TMPFS_POSIX_ACL/s/.*/CONFIG_TMPFS_POSIX_ACL=y/' .config
     # Enable HoneyComb specific
     sed -i '/CONFIG_FSL_MC_UAPI_SUPPORT/s/.*/CONFIG_FSL_MC_UAPI_SUPPORT=y/' .config
     sed -i '/CONFIG_FSL_DPAA2_QDMA/s/.*/CONFIG_FSL_DPAA2_QDMA=m/' .config
