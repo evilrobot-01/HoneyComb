@@ -263,6 +263,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     sed -i '/CONFIG_LOGO=/s/.*/# CONFIG_LOGO is not set/' .config
     # A few peripherals specifc to my setup
     sed -i '/CONFIG_DRM_AMDGPU/s/.*/CONFIG_DRM_AMDGPU=m/' .config
+    sed -i '/CONFIG_FB_SIMPLE/s/.*/CONFIG_FB_SIMPLE=y/' .config
     sed -i '/CONFIG_HID_MAGICMOUSE/s/.*/CONFIG_HID_MAGICMOUSE=m/' .config
     sed -i '/CONFIG_SND_HDA_INTEL/s/.*/CONFIG_SND_HDA_INTEL=m/' .config
     sed -i '/CONFIG_SND_USB_AUDIO/s/.*/CONFIG_SND_USB_AUDIO=m/' .config
