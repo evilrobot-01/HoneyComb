@@ -89,7 +89,7 @@ Next we need to populate fstab:
 
     pacman -S arch-install-scripts
     genfstab -U /mnt >> /mnt/etc/fstab
-    cat root/etc/fstab
+    cat /mnt/etc/fstab
     
 The USB device will require a startup.nsh file that the UEFI shell will run on boot. This is using the EFIStub functionality of the kernel. Replace /dev/sdxn below with the relevant partition identifier. See the UEFI boot entry section further below if you want to create one.
 
