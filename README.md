@@ -226,7 +226,9 @@ Test that you can login as new new user on another tty (CTRL-ALT-F2) and if succ
 
     userdel alarm
     
-I still havent gotten around to changing the default host name!
+Finally set a host name and reboot when required.
+
+    hostnamectl set-hostname "your hostname"
 
 ## Building Kernel
 
