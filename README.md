@@ -288,7 +288,7 @@ Finally update "boot loader" (startup.nsh for now) to load new kernel, along wit
 
 If everything is working, update /etc/pacman.conf to ignore kernel package updates until all of the SolidRun patches are in the mainline kernel.
 
-    IgnorePkg   = linux linux-aarch64
+    IgnorePkg   = linux-aarch64
     
 ## Creating UEFI Boot Entry
 
