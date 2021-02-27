@@ -182,7 +182,7 @@ Next we need to set up the boot partition and populate fstab (amend as necessary
 
     pacman -S arch-install-scripts
     genfstab -U /mnt >> /mnt/etc/fstab
-    cat root/etc/fstab
+    cat /mnt/etc/fstab
 
 Next start to configure the system.
 
