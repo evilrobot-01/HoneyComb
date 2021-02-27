@@ -61,8 +61,7 @@ Next we will set up the required partitions:
 
 Type o to clear out any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, 1 for first partition, enter to accept default first sector and then +260M for last. Then enter ef00 for the EFI system partition.
 
-    o   p   n   1   ENTER   +260M
-    ef00
+    o   p   n   1   ENTER   +260M   ef00
 
 To create the root partition, type n for a new partition, 2 for second partition, enter to accept default first sector and enter again for last. Press enter again to accept the default linux filesystem.
 
