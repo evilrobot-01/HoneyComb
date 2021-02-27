@@ -126,20 +126,20 @@ Create a working folder and then pull down the latest generic ARM build:
 
 List the disks to determine the NVMe identifier, in my case it was /dev/nvme0n1:
 
-    fdisk -l
+    lsblk -o NAME,PATH
 
 Next we will set up the required partitions:
 
-    fdisk /dev/nvme0n1
+    pacman -S gptfdisk
+    gdisk /dev/nvme0n1
 
-Type o to purge any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, p for primary, 1 for first partition, enter to accept default first sector and then +1G for last. Then type t and then c to set the partition as W95 FAT32 (LBA).
+Type o to clear out any partitions, then p to check that they have been cleared. To create the boot partition, type n for a new partition, 1 for first partition, enter to accept default first sector and then +1G for last. Then enter ef00 for the EFI system partition.
 
-    o   p   n   p   1   ENTER   +1G
-    t   c
+    o   p   n   1   ENTER   +1G   ef00
 
-To create the root partition, type n for a new partition, p for primary, 2 for second partition, enter to accept default first sector and enter again for last.
+To create the root partition, type n for a new partition, 2 for second partition, enter to accept default first sector and enter again for last.
 
-    n   p   2   ENTER   ENTER
+    n   2   ENTER   ENTER   ENTER
 
 Finally write the changes and exit by pressing w.
 
@@ -175,7 +175,7 @@ Next we need to create and mount the file systems (amend device as necessary). I
 
 Next we extract the downloaded build to the root partition and then ensure that any cached writes are flushed to disk. This may take a few moments...
 
-    bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
+    tar -xzvf ArchLinuxARM-aarch64-latest.tar.gz -C /mnt
     sync
 
 Next we need to set up the boot partition and populate fstab (amend as necessary):
@@ -212,7 +212,7 @@ Start up again and once booted, initialise the pacman keyring, populate the sign
 
     pacman-key --init
     pacman-key --populate archlinuxarm
-    pacman -Syu
+    pacman -Syu # NOTE: dont update linux-aarch64 to 5.11.*
     reboot
     
 Once rebooted, change the default root password and then set up a new user with sudo privileges:
