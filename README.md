@@ -15,16 +15,16 @@ Clone the git repository and fix the missing `arch` command in the build script 
 Next run the script with INITIALIZE to ensure all the required firmware build tools are installed and submodules are fetched from source and then start the build of the firmware, adapting your memory speed as applicable. I also increased the SOC/bus speed.
 
     INITIALIZE=1 . ./runme.sh  
-    DDR_SPEED=3200 SOC_SPEED=2200 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
+    DDR_SPEED=3200 SOC_SPEED=2300 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
 
 Once built, check the images directory:
 
     $ ls images
     lx2160acex7_2200_700_3200_8_5_2.img
     
-Finally flash the firmware to a SD card. Use fdisk -l to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as sdX I believe, but when doing again recently on the HoneyComb it was mmcblk0.
+Finally flash the firmware to a SD card. Use lsblk to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as sdX I believe, but when doing again recently on the HoneyComb it was mmcblk0.
 
-    sudo fdisk -l
+    lsblk
     sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/mmcblk0 conv=fsync
     
 Insert the SD card into the Honeycomb, connect the USB console cable and then fire up minicom (ensuring you disable hardware/software flow control under serial port setup and then save for future) before finally powering up the Honeycomb to check the firmware loads up. You could also use a monitor connected directly if required, but the linked articles said not to and when I first attempted this I didnt yet have a GPU installed.
