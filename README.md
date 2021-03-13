@@ -15,7 +15,7 @@ Clone the git repository and fix the missing `arch` command in the build script 
 Next run the script with INITIALIZE to ensure all the required firmware build tools are installed and submodules are fetched from source and then start the build of the firmware, adapting your memory speed as applicable. I also increased the SOC/bus speed.
 
     INITIALIZE=1 . ./runme.sh  
-    DDR_SPEED=3200 SOC_SPEED=2300 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
+    DDR_SPEED=3200 SOC_SPEED=2200 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
 
 Once built, check the images directory:
 
