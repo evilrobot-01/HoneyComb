@@ -3,25 +3,19 @@
 This rough guide provides steps for getting a working Arch Linux ARM install on the HoneyComb LX2K. The steps were documented as I first installed things from an x86 Arch machine and then later updated as I progressed with work on the machine itself. Please also note that I am pretty new to Arch and Linux so some of this might not be the best way to go about things. Any corrections/tips/pointers greatly appreciated! Based on information from https://gist.github.com/meme/c1f1101fac0f58e883ae08872f19b883 and https://dev.to/lizthegrey/first-experiences-with-honeycomb-lx2k-26be.
 
 ## Building UEFI firmware
-Ensure required packages are installed.
+Ensure required packages are installed:
 
     sudo pacman -S acpica dtc
     
-Clone the git repository and fix the missing `arch` command in the build script (if applicable to your current distro) 
+Clone the git repository and fix the missing `arch` command in the build script (if applicable to your current distro):
 
     git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
     sed -i 's/HOST_ARCH=`arch`/HOST_ARCH=`uname -m`/' runme.sh
     
-NOTE: there is an issue with building using Python 3.9 so I needed to temporarily install 3.8. I ended up using yay -S python38 and then symlinking python3 to python38 temporarily to get the firmware build done. I spent ages trying to find a neat solution but eventually get fed up. None of the python virtual environment stuff worked for me as the build scripts seem to scan for binaries (whereis python3) rather than determining the running python environment version. I then just removed python38 and re-installed python (3.9.1) afterwards (yay -R python38 && pacman -S python) to ensure everything went back to normal.
-    
-Next run the script with INITIALIZE to ensure all the required firmware build tools are installed and submodules are fetched from source and then start the build of the firmware, adapting your memory speed as applicable. There is also a patch which needs to be applied to the local source *after* INITIALIZE, which resolves the 'invalid base clock frequency' issue I was having with MMC on boot.
+Next run the script with INITIALIZE to ensure all the required firmware build tools are installed and submodules are fetched from source and then start the build of the firmware, adapting your memory speed as applicable. I also increased the SOC/bus speed.
 
-    INITIALIZE=1 . ./runme.sh
-    
-    # Apply patch
-    cd build/tianocore/edk2-platforms && git cherry-pick 0276df7768ac10a3c0596b2882c9fbdedc26d717 && cd ../../..
-    
-    DDR_SPEED=3200 ./runme.sh
+    INITIALIZE=1 . ./runme.sh  
+    DDR_SPEED=3200 SOC_SPEED=2200 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
 
 Once built, check the images directory:
 
@@ -31,9 +25,9 @@ Once built, check the images directory:
 Finally flash the firmware to a SD card. Use fdisk -l to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as sdX I believe, but when doing again recently on the HoneyComb it was mmcblk0.
 
     sudo fdisk -l
-    sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/sdX conv=fsync
+    sudo dd if=images/lx2160acex7_2200_700_3200_8_5_2.img of=/dev/mmcblk0 conv=fsync
     
-Insert the SD card into the Honeycomb, connect the USB console cable and then fire up minicom (ensuring you disable hardware/software flow control under serial port setup and then save for future) before finally powering up the Honeycomb to check the firmware loads up. You could also use monitor connected directly if required, but the linked articles said not to and when I first attempted this I didnt yet have a GPU installed.
+Insert the SD card into the Honeycomb, connect the USB console cable and then fire up minicom (ensuring you disable hardware/software flow control under serial port setup and then save for future) before finally powering up the Honeycomb to check the firmware loads up. You could also use a monitor connected directly if required, but the linked articles said not to and when I first attempted this I didnt yet have a GPU installed.
 
     sudo minicom -s -c on -D /dev/ttyUSB0
     
