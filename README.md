@@ -254,7 +254,6 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
         # sed -i '/CONFIG_STAGING/s/.*/CONFIG_STAGING=y/' .config
     echo "CONFIG_FSL_DPAA2=y" >> .config
     echo "CONFIG_FSL_DPAA2_ETHSW=m" >> .config
-    sed -i '/CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=/s/.*/# CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT is not set/' .config
     # Silent boot
     sed -i '/CONFIG_LOGO=/s/.*/# CONFIG_LOGO is not set/' .config
     # A few peripherals specifc to my setup
@@ -273,7 +272,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
     sudo cp -v arch/arm64/boot/Image /boot
     sudo cp -v arch/arm64/boot/Image.gz /boot
-    sudo mkinitcpio -k 5.10.12-ARCH+ -g /boot/initramfs-linux.img
+    sudo mkinitcpio -k 5.10.23-ARCH+ -g /boot/initramfs-linux.img
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version above for a more traditional setup:
 
