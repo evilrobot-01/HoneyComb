@@ -46,7 +46,7 @@ Then change to root:
     
 Insert the USB disk and then list the disks to determine the identifier, in my case it was /dev/sdg:
 
-    lsblk -o NAME,PATH
+    lsblk -o NAME,PATH,SIZE
     
 Next we will set up the required partitions:
 
@@ -120,7 +120,7 @@ Create a working folder and then pull down the latest generic ARM build:
 
 List the disks to determine the NVMe identifier, in my case it was /dev/nvme0n1:
 
-    lsblk -o NAME,PATH
+    lsblk -o NAME,PATH,SIZE
 
 Next we will set up the required partitions:
 
