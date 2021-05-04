@@ -11,4 +11,5 @@ CONFIG_NR_CPUS=16
 CONFIG_PHYLINK=y
 
 # Silent boot
+CONFIG_CMDLINE=""
 # CONFIG_LOGO is not set
