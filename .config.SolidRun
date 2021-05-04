@@ -6,10 +6,13 @@
 CONFIG_ARCH_LAYERSCAPE=y
 # CONFIG_ARCH_HISI is not set
 # CONFIG_ARCH_MEDIATEK is not set
+# CONFIG_ARCH_MESON is not set
 # CONFIG_ARCH_MVEBU is not set
 # CONFIG_ARCH_MXC is not set
 # CONFIG_ARCH_QCOM is not set
+# CONFIG_ARCH_ROCKCHIP is not set
 # CONFIG_ARCH_SEATTLE is not set
+# CONFIG_ARCH_SUNXI is not set
 # CONFIG_ARCH_TEGRA is not set
 # CONFIG_ARCH_VEXPRESS is not set
 # CONFIG_ARCH_XGENE is not set
@@ -59,6 +62,12 @@ CONFIG_PHYLINK=y
 CONFIG_FWNODE_MDIO=y
 CONFIG_ACPI_MDIO=y
 
+# Console display driver support
+# CONFIG_LOGO is not set
+
+# DMA Devices
+CONFIG_FSL_DPAA2_QDMA=m
+
 # NXP/Freescale QorIQ SoC drivers
 CONFIG_FSL_DPAA=y
 # CONFIG_FSL_DPAA_CHECKING is not set
@@ -69,14 +78,8 @@ CONFIG_FSL_MC_DPIO=y
 CONFIG_DPAA2_CONSOLE=y
 # CONFIG_FSL_RCPM is not set
 
-# DMA Devices
-CONFIG_FSL_DPAA2_QDMA=m
-
 # IRQ chip support
 CONFIG_ARM_GIC_V3_ITS_FSL_MC=y
-
-# Console display driver support
-# CONFIG_LOGO is not set
 
 # Crypto library routines
 CONFIG_CRYPTO_DEV_FSL_DPAA2_CAAM=m
