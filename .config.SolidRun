@@ -2,20 +2,7 @@
 # SolidRun HoneyComb Kernel
 
 # Platform selection
-# CONFIG_ARCH_BCM2835 is not set
 CONFIG_ARCH_LAYERSCAPE=y
-# CONFIG_ARCH_HISI is not set
-# CONFIG_ARCH_MEDIATEK is not set
-# CONFIG_ARCH_MESON is not set
-# CONFIG_ARCH_MVEBU is not set
-# CONFIG_ARCH_MXC is not set
-# CONFIG_ARCH_QCOM is not set
-# CONFIG_ARCH_ROCKCHIP is not set
-# CONFIG_ARCH_SEATTLE is not set
-# CONFIG_ARCH_SUNXI is not set
-# CONFIG_ARCH_TEGRA is not set
-# CONFIG_ARCH_VEXPRESS is not set
-# CONFIG_ARCH_XGENE is not set
 
 CONFIG_ARM64_ERRATUM_845719=y
 CONFIG_ARM64_ERRATUM_1418040=y
@@ -40,6 +27,14 @@ CONFIG_FSL_MC_UAPI_SUPPORT=y
 
 # Raw/parallel NAND flash controllers
 CONFIG_MTD_NAND_FSL_IFC=y
+
+# SPI Master Controller Drivers
+CONFIG_SPI_FSL_LPSPI=y
+CONFIG_SPI_FSL_QUADSPI=y
+CONFIG_SPI_FSL_DSPI=y
+
+# DMA Devices
+CONFIG_FSL_EDMA=y
 
 # Network
 CONFIG_NET_VENDOR_FREESCALE=y
@@ -66,7 +61,10 @@ CONFIG_ACPI_MDIO=y
 # CONFIG_LOGO is not set
 
 # DMA Devices
-CONFIG_FSL_DPAA2_QDMA=m
+# CONFIG_FSL_DPAA2_QDMA is not set
+
+# Clock driver for ARM Reference designs
+CONFIG_COMMON_CLK_FSL_SAI=y
 
 # NXP/Freescale QorIQ SoC drivers
 CONFIG_FSL_DPAA=y
@@ -74,6 +72,7 @@ CONFIG_FSL_DPAA=y
 # CONFIG_FSL_BMAN_TEST is not set
 # CONFIG_FSL_QMAN_TEST is not set
 # CONFIG_QUICC_ENGINE is not set
+CONFIG_FSL_GUTS=y
 CONFIG_FSL_MC_DPIO=y
 CONFIG_DPAA2_CONSOLE=y
 # CONFIG_FSL_RCPM is not set
