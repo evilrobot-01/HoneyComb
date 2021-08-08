@@ -9,7 +9,7 @@ Ensure all the packages required for building a kernel are installed.
 Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default Arch Linux ARM config, merge in the required config for the HoneyComb and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/d883ab288f620dfd4967ae5e923faa45efc621dd/core/linux-aarch64/config#L376) so the first kernel build wont be full throttle. This is corrected in the .config.HoneyComb kernel fragements file which is merged in below.
 
     # Preparation
-    git clone -b linux-5.10.y-cex7 https://github.com/SolidRun/linux-stable && cd linux-stable
+    git clone -b linux-5.10.y-cex7-latest https://github.com/SolidRun/linux-stable && cd linux-stable
     git remote add kernel-org https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     git pull --rebase kernel-org linux-5.10.y
 
