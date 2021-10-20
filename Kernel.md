@@ -4,20 +4,20 @@ Based on information at https://gist.github.com/thalamus/561d028ff5b66310fac1224
 
 Ensure all the packages required for building a kernel are installed.
 
-    pacman -S base-devel git xmlto kmod inetutils bc libelf cpio perl tar xz python
+    pacman -S base-devel git xmlto kmod inetutils bc libelf cpio perl tar xz python wget
 
-Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default Arch Linux ARM config, merge in the required config for the HoneyComb and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/d883ab288f620dfd4967ae5e923faa45efc621dd/core/linux-aarch64/config#L376) so the first kernel build wont be full throttle. This is corrected in the .config.HoneyComb kernel fragements file which is merged in below.
+Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default Arch Linux ARM config, merge in the required config for the HoneyComb and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/master/core/linux-aarch64/config#L393) so the first kernel build wont be full throttle. This is corrected in the .config.HoneyComb kernel fragments file which is merged in below.
 
     # Preparation
-    git clone -b linux-5.10.y-cex7-latest https://github.com/SolidRun/linux-stable && cd linux-stable
+    git clone -b 5.14-rc1-cex7 https://github.com/SolidRun/linux-stable && cd linux-stable
     git remote add kernel-org https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-    git pull --rebase kernel-org linux-5.10.y
+    git pull --rebase kernel-org linux-5.14.y
 
     # Ensure clean
     make mrproper
     
     # Use default Arch Linux ARM config, along with additional options required for HoneyComb
-    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/8abea2250236f896fe07b9773d9d938f739b39eb/core/linux-aarch64/config -O .config
+    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/linux-aarch64/config -O .config
     wget https://raw.githubusercontent.com/frank-bell/HoneyComb/main/.config.HoneyComb -O .config.HoneyComb
     ./scripts/kconfig/merge_config.sh .config .config.HoneyComb
         
@@ -30,7 +30,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
     sudo cp -v arch/arm64/boot/Image /boot
     sudo cp -v arch/arm64/boot/Image.gz /boot
-    sudo mkinitcpio -k 5.10.57-ARCH+ -g /boot/initramfs-linux.img
+    sudo mkinitcpio -k 5.14.14-ARCH+ -g /boot/initramfs-linux.img
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version in the main README for a more traditional setup:
 
