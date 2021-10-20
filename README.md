@@ -87,7 +87,7 @@ Next we need to populate fstab:
     
 The USB device will require a startup.nsh file that the UEFI shell will run on boot. This is using the EFIStub functionality of the kernel. Replace /dev/sdxn below with the relevant partition identifier. See the UEFI boot entry section further below if you want to create one.
 
-    echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img" > /mnt/boot/startup.nsh
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/sdX2) rw rootfstype=ext4 initrd=initramfs-linux.img arm-smmu.disable_bypass=0 iommu.passthrough=1 amdgpu.pcie_gen_cap=0x4" > /mnt/boot/startup.nsh
     cat /mnt/boot/startup.nsh
     
 Finally unmount and exit from root and then move the USB drive to the HoneyComb.
