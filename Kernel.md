@@ -9,9 +9,9 @@ Ensure all the packages required for building a kernel are installed.
 Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default Arch Linux ARM config, merge in the required config for the HoneyComb and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/master/core/linux-aarch64/config#L393) so the first kernel build wont be full throttle. This is corrected in the .config.HoneyComb kernel fragments file which is merged in below.
 
     # Preparation
-    git clone -b 5.14-rc1-cex7 https://github.com/SolidRun/linux-stable && cd linux-stable
+    git clone -b linux-5.15.y-cex7-dev https://github.com/SolidRun/linux-stable && cd linux-stable
     git remote add kernel-org https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-    git pull --rebase kernel-org linux-5.14.y
+    git pull --rebase kernel-org linux-5.15.y
 
     # Ensure clean
     make mrproper
@@ -30,7 +30,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
     sudo cp -v arch/arm64/boot/Image /boot
     sudo cp -v arch/arm64/boot/Image.gz /boot
-    sudo mkinitcpio -k 5.14.14-ARCH+ -g /boot/initramfs-linux.img
+    sudo mkinitcpio -k 5.15.3-ARCH+ -g /boot/initramfs-linux.img
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version in the main README for a more traditional setup:
 
