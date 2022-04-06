@@ -1,20 +1,16 @@
 # Patching Mesa
 
-Run the following commands to download the mesa package definition along with additional patch:
+As per https://gist.github.com/jnettlet/1f461487bee9c3e2a2d994f25441717d, create a `/etc/drirc`file with the following contents (restarting X to take effect):
 
-    sudo pacman -S svn
-    svn export https://github.com/archlinuxarm/PKGBUILDs/trunk/extra/mesa && cd mesa
-    wget https://raw.githubusercontent.com/void-linux/void-packages/master/srcpkgs/mesa/patches/0001-radeonsi-On-Aarch64-force-persistent-buffers-to-GTT.patch
-
-Edit the PKGBUILD and add the following line into the source section to add the patch:
-
-    0001-radeonsi-On-Aarch64-force-persistent-buffers-to-GTT.patch
-        
-And then add the following to the end of prepare() to apply the patch:
-
-    patch -p1 -i ../0001-radeonsi-On-Aarch64-force-persistent-buffers-to-GTT.patch
-  
-Finally re-generate the integrate checks and then build/install the package:
-       
-    makepkg -g >> PKGBUILD
-    makepkg --ignorearch --skippgpcheck -si
+    <driconf>
+        <!-- Please always enable app-specific workarounds for all drivers and
+             screens. -->
+        <device>
+            <application name="XWayland" executable="Xwayland">
+                <option name="mesa_extension_override" value="-GL_ARB_buffer_storage" />
+            </application>
+            <application name="Xorg" executable="Xorg">
+                <option name="mesa_extension_override" value="-GL_ARB_buffer_storage" />
+            </application>
+        </device>
+    </driconf>
