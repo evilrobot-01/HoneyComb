@@ -17,7 +17,7 @@ Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tre
     make mrproper
     
     # Use default Arch Linux ARM config, along with additional options required for HoneyComb
-    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/linux-aarch64/config -O .config
+    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/272b419ccec107f23f4b06dc850a98aad2776c4b/core/linux-aarch64/config -O .config
     wget https://raw.githubusercontent.com/frank-bell/HoneyComb/main/.config.HoneyComb -O .config.HoneyComb
     ./scripts/kconfig/merge_config.sh .config .config.HoneyComb
         
@@ -30,7 +30,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
     sudo cp -v arch/arm64/boot/Image /boot
     sudo cp -v arch/arm64/boot/Image.gz /boot
-    sudo mkinitcpio -k 5.15.3-ARCH+ -g /boot/initramfs-linux.img
+    sudo mkinitcpio -k 5.15.44-ARCH+ -g /boot/initramfs-linux.img
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version in the main README for a more traditional setup:
 
