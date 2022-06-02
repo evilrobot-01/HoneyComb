@@ -3,35 +3,21 @@
 This rough guide provides steps for getting a working Arch Linux ARM install on the HoneyComb LX2K. The steps were documented as I first installed things from an x86 Arch machine and then later updated as I progressed with work on the machine itself. Please also note that I am pretty new to Arch and Linux so some of this might not be the best way to go about things. Any corrections/tips/pointers greatly appreciated! Based on information from https://gist.github.com/meme/c1f1101fac0f58e883ae08872f19b883 and https://dev.to/lizthegrey/first-experiences-with-honeycomb-lx2k-26be.
 
 ## Building UEFI firmware
-There are issues building the firmware using GCC > 10, so we will use the gcc:10 Docker image, mounting a directory on the host to copy the resulting image. Run the below command, which should result in an active command prompt within the container. Amend the /host/images location to the directory you want to mount on the host.
+Standard firmware images are available from https://images.solid-run.com, but custom firmware can easily be built using the SolidRun provided Docker image as follows:
 
-    sudo docker run --name lx2160a_uefi -it -v /host/images:/home/hc gcc:10
+    git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
+    sudo docker build -t lx2160a_uefi docker/ && sudo docker run -e SOC_SPEED=2200 -e BUS_SPEED=800 -e DDR_SPEED=3200 -e XMP_PROFILE=1 -v "$PWD":/work:Z --rm -i -t lx2160a_uefi build
 
-Run the following commands within the container to install the required packages, clone the git repository, initialise the build tools (along with required submodules being fetched from source), build the firmware and then copy the resulting image to the mounted volume. Adapting your memory speed as applicable. I also increased the SOC/bus speed.
-
-    apt update && apt install device-tree-compiler && apt install gettext && apt install iasl
-    cd /home && git clone --depth 1 https://github.com/SolidRun/lx2160a_uefi.git && cd lx2160a_uefi
-    bash # open a new shell as the next command exits the existing shell
-    INITIALIZE=1 . ./runme.sh
-    DDR_SPEED=3200 SOC_SPEED=2200 BUS_SPEED=800 ./runme.sh # Or replace DDR_SPEED=3200 with DDR_SPEED=2900 XMP_PROFILE=2 if memory supports XMP
-    cp images/lx2160acex7_*.img /home/hc
-    exit
-
-Finally clean up the Docker containers/images
-
-    sudo docker stop lx2160a_uefi && sudo docker rm lx2160a_uefi
-    sudo docker rmi gcc:10
-    sudo docker container prune
-    sudo docker image prune
+The resulting image will appear within the `images` subdirectory. Dont forget to clean up the resulting Docker image with `sudo docker rmi lx2160a_uefi`. 
   
-Finally flash the firmware to a SD card. Use lsblk to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as sdX I believe, but when doing again recently on the HoneyComb it was mmcblk0.
+Finally flash the firmware to a SD card. Use lsblk to list the disks and check through the output to find the correct target disk. When doing it on my x86 machine it was listed as /dev/sdX, but when doing directly on the HoneyComb it was mmcblk0. An alternative is to use https://www.balena.io/etcher which seems to provide better error notifications. I had an issue where firmware didnt seem to be writing via dd with no error, tried it via etcher and got an error which was resolved by a reboot.
 
     lsblk
     sudo dd if=images/lx2160acex7_2200_800_3200_8_5_2_sd_ee5c233.img of=/dev/mmcblk0 conv=fsync
     
-Insert the SD card into the Honeycomb, connect the USB console cable and then fire up minicom (ensuring you disable hardware/software flow control under serial port setup and then save for future) before finally powering up the Honeycomb to check the firmware loads up. You could also use a monitor connected directly if required, but the linked articles said not to and when I first attempted this I didnt yet have a GPU installed.
+Insert the SD card into the Honeycomb, connect the USB console cable and then fire up [tio](https://aur.archlinux.org/packages/tio) before finally powering up the Honeycomb to check the firmware loads up. You could also use a monitor connected directly if required, but the linked articles said not to and when I first attempted this I didnt yet have a GPU installed.
 
-    sudo minicom -s -c on -D /dev/ttyUSB0
+    sudo tio /dev/ttyUSB0
     
 ## Building an Arch Linux ARM USB
 
