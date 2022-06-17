@@ -9,15 +9,15 @@ Ensure all the packages required for building a kernel are installed.
 Pull down the latest kernel source from SolidRun's GitHub, ensure the kernel tree is clean, create the kernel configuration based on the default Arch Linux ARM config, merge in the required config for the HoneyComb and then finally start the kernel compilation. NOTE: the generic Arch ARM image has a kernel parameter limiting the number of CPUs to 8 (https://github.com/archlinuxarm/PKGBUILDs/blob/master/core/linux-aarch64/config#L393) so the first kernel build wont be full throttle. This is corrected in the .config.HoneyComb kernel fragments file which is merged in below.
 
     # Preparation
-    git clone -b linux-5.15.y-cex7-dev https://github.com/SolidRun/linux-stable && cd linux-stable
+    git clone -b linux-5.18.y-cex7 https://github.com/SolidRun/linux-stable && cd linux-stable
     git remote add kernel-org https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-    git pull --rebase kernel-org linux-5.15.y
+    git pull --rebase kernel-org linux-5.18.y
 
     # Ensure clean
     make mrproper
     
     # Use default Arch Linux ARM config, along with additional options required for HoneyComb
-    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/272b419ccec107f23f4b06dc850a98aad2776c4b/core/linux-aarch64/config -O .config
+    wget https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/linux-aarch64/config -O .config
     wget https://raw.githubusercontent.com/frank-bell/HoneyComb/main/.config.HoneyComb -O .config.HoneyComb
     ./scripts/kconfig/merge_config.sh .config .config.HoneyComb
         
@@ -30,7 +30,7 @@ Next, copy the kernel to the boot partition and then generate the initial RAM di
 
     sudo cp -v arch/arm64/boot/Image /boot
     sudo cp -v arch/arm64/boot/Image.gz /boot
-    sudo mkinitcpio -k 5.15.44-ARCH+ -g /boot/initramfs-linux.img
+    sudo mkinitcpio -k 5.18.5-ARCH+ -g /boot/initramfs-linux.img
 
 Finally update "boot loader" (startup.nsh for now) to load new kernel, along with a few parameters to work around current known issues. The below is based on my NVMe BTRFS setup, but you could use something like the USB version in the main README for a more traditional setup:
 
