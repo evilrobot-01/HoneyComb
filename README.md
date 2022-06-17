@@ -224,7 +224,7 @@ I havent had success with creating a UEFI boot entry directly from Arch yet, but
 
 Firstly generate a boot options file from Arch, which will hold all the required kernel parameters and which will be used to make entry creation within the shell easier. The file must be encoded using UCS-2:
 
-    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 iommu.passthrough=1 quiet udev.log_level=3 vt.global_cursor_default=0" | iconv -t ucs2 -o /boot/options.txt
+    echo "Image root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2) rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 arm-smmu.disable_bypass=0 iommu.passthrough=1 quiet udev.log_level=3 vt.global_cursor_default=0" | iconv -t ucs2 -o /boot/options.txt
     
 Boot into the UEFI Shell and then enter the following to create the entry, which will set it as the first boot entry.
 
@@ -251,4 +251,4 @@ Install the efibootmgr package to create a UEFI boot entry. Use blkid to identif
 
     pacman -S efibootmgr
     blkid
-    efibootmgr --disk /dev/Xda -e 3 --create --label "Arch Linux ARM" --loader /Image --UCS-2 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rw initrd=\initramfs-linux.img' --verbose
+    efibootmgr --disk /dev/Xda -e 3 --create --label "Arch Linux ARM" --loader /Image --UCS-2 'root=UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX rootflags=subvol=@ rw rootfstype=btrfs initrd=initramfs-linux.img amdgpu.pcie_gen_cap=0x4 arm-smmu.disable_bypass=0 iommu.passthrough=1 quiet udev.log_level=3 vt.global_cursor_default=0' --verbose
